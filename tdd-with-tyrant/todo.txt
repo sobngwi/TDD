@@ -1,7 +1,7 @@
-put
-get
+X put
+X get
 * remove
-* vanish
+X S vanish
 * iterator
 * size
 

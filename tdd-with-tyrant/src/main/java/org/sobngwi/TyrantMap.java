@@ -19,6 +19,7 @@ public class TyrantMap {
 	private static final int OPERATION_PREFIX = 0xC8;
 	private static final int PUT_OPERATION = 0xC10;
 	private static final int  CLEAR_OPERATION = 0xC72;
+	private static final int REMOVE_OPERATION = 0xC20;
 	
 	private Socket socket;
 	private DataOutputStream writer;
@@ -34,6 +35,19 @@ public class TyrantMap {
 		if ( status != 0 ) {
 			throw new RuntimeException(" CLEAR : insertion Failed ");
 		}
+	}
+	
+	public void remove(byte[] key) throws IOException {
+		writer.write(OPERATION_PREFIX);
+		writer.write(REMOVE_OPERATION);
+		
+		writer.writeInt(key.length);
+		writer.write(key);
+
+		int status = reader.read();
+		if ( status != 0 ) 
+			throw new RuntimeException(" READ : insertion Failed ");
+		
 	}
 	
 	public void openConnection() throws UnknownHostException, IOException {
@@ -83,14 +97,16 @@ public class TyrantMap {
 		int status = reader.read();
 		if ( status == 1 ) 
 			return null ;
-		if ( status != 0 ) {
+		if ( status != 0 ) 
 			throw new RuntimeException(" READ : insertion Failed ");
-		}
+		
 		int length = reader.readInt();
 		byte[] results= new  byte[length] ;
 		reader.read(results) ; // TODO read longer values
 		return results;
 	}
+
+
 
 	
 }

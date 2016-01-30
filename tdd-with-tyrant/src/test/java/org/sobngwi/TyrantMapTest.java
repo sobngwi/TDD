@@ -68,5 +68,18 @@ public class TyrantMapTest {
 	    tyrant.clear();
 	    assertNull(tyrant.get(key));
 	}
+	
+	@Test
+	public void removeRemovesKey() throws IOException {
+		//Connection open with the tyrant map.
+
+		byte[] key = new byte[]{'k','e','y'};
+		byte[] value = new byte[]{'v','a','l', 'u', 'e'};
+	    tyrant.put(key , value);
+	    assertArrayEquals(value, tyrant.get(key));
+	    tyrant.remove(key);
+	    assertNull(tyrant.get(key));
+	}
+	
 
 }

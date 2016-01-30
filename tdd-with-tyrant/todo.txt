@@ -1,0 +1,11 @@
+* put
+* get
+* remove
+* vanish
+* iterator
+* size
+
+* socket
+* http
+
+* auto-connect tyrant

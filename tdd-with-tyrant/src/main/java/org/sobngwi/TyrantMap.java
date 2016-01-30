@@ -81,6 +81,8 @@ public class TyrantMap {
 		writer.write(key);
 
 		int status = reader.read();
+		if ( status == 1 ) 
+			return null ;
 		if ( status != 0 ) {
 			throw new RuntimeException(" READ : insertion Failed ");
 		}

@@ -18,16 +18,24 @@ public class TyrantMap {
 	private static final int GET_OPERATION = 0xC30;
 	private static final int OPERATION_PREFIX = 0xC8;
 	private static final int PUT_OPERATION = 0xC10;
+	private static final int  CLEAR_OPERATION = 0xC72;
 	
 	private Socket socket;
 	private DataOutputStream writer;
 	private DataInputStream reader;
 
 
-	/**
-	 * @throws UnknownHostException
-	 * @throws IOException
-	 */
+
+	public void clear() throws IOException {
+		writer.write(OPERATION_PREFIX);
+		writer.write(CLEAR_OPERATION);
+
+		int status = reader.read();
+		if ( status != 0 ) {
+			throw new RuntimeException(" CLEAR : insertion Failed ");
+		}
+	}
+	
 	public void openConnection() throws UnknownHostException, IOException {
 		socket = new Socket ( "localhost" , 1978);
 		writer = new DataOutputStream(socket.getOutputStream());
@@ -81,5 +89,6 @@ public class TyrantMap {
 		reader.read(results) ; // TODO read longer values
 		return results;
 	}
+
 	
 }

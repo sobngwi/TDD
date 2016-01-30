@@ -15,7 +15,7 @@ import org.junit.Test;
  * @author Alain Narcisse SOBNGWI
  *
  */
-public class TyrantTest {
+public class TyrantMapTest {
 	
 	TyrantMap tyrant ;
 
@@ -33,6 +33,7 @@ public class TyrantTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		tyrant.clear();
 		tyrant.closeConnection();
 	}
 

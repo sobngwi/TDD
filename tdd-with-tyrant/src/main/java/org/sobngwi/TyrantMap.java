@@ -118,17 +118,6 @@ public class TyrantMap implements Iterable <byte[]>{
 		
 	}
 
-	public void reset() throws IOException {
-
-		writeOperationCode(RESET_OPERATION);
-
-		int status = reader.read();
-		if ( status != 0 ) {
-			throw new RuntimeException(" RESET  :  Failed ");
-		}
-	
-	}
-
 	public byte[] getNextKey() throws IOException{
 
 		writeOperationCode(NEXTKEY_OPERATION);
@@ -137,6 +126,16 @@ public class TyrantMap implements Iterable <byte[]>{
 	
 	}
 
+	public void openConnection() throws UnknownHostException, IOException {
+		socket = new Socket ( "localhost" , 1978);
+		writer = new DataOutputStream(socket.getOutputStream());
+		reader = new DataInputStream(socket.getInputStream());
+	}
+
+	public void closeConnection() throws IOException {
+		socket.close();
+	}
+	
 	private void writekeyDatas(byte[] key) throws IOException {
 		writer.writeInt(key.length);
 		writer.write(key);
@@ -168,13 +167,15 @@ public class TyrantMap implements Iterable <byte[]>{
 		return results;
 	}
 	
-	public void openConnection() throws UnknownHostException, IOException {
-		socket = new Socket ( "localhost" , 1978);
-		writer = new DataOutputStream(socket.getOutputStream());
-		reader = new DataInputStream(socket.getInputStream());
+	private void reset() throws IOException {
+
+		writeOperationCode(RESET_OPERATION);
+
+		int status = reader.read();
+		if ( status != 0 ) {
+			throw new RuntimeException(" RESET  :  Failed ");
+		}
+	
 	}
 
-	public void closeConnection() throws IOException {
-		socket.close();
-	}
 }

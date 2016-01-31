@@ -120,14 +120,12 @@ public class TyrantMapTest {
 		
 	@Test
 	public void resetAndGetEmptyTyrant() throws IOException {
-			tyrant.reset();
 			assertNull(tyrant.getNextKey());
 	}
 	
 	@Test
 	public void resetAndGetOneElementTyrant() throws IOException {
 		tyrant.put(KEY , VALUE);	
-		tyrant.reset();
 		assertArrayEquals(VALUE, tyrant.get(KEY));
 	}
 	
@@ -135,7 +133,6 @@ public class TyrantMapTest {
 	public void resetAndGetTwoElementTyrant() throws IOException {
 		tyrant.put(KEY ,  VALUE);
 		tyrant.put(KEY1 , VALUE1);
-		tyrant.reset();
 		int count =0 ;
 
 		for (byte[] each : tyrant) {

@@ -20,36 +20,13 @@ public class TyrantMap {
 	private static final int PUT_OPERATION = 0xC10;
 	private static final int  CLEAR_OPERATION = 0xC72;
 	private static final int REMOVE_OPERATION = 0xC20;
+	private static final int SIZE_OPERATION = 0xC80;
 	
 	private Socket socket;
 	private DataOutputStream writer;
 	private DataInputStream reader;
 
 
-
-	public void clear() throws IOException {
-		writer.write(OPERATION_PREFIX);
-		writer.write(CLEAR_OPERATION);
-
-		int status = reader.read();
-		if ( status != 0 ) {
-			throw new RuntimeException(" CLEAR : insertion Failed ");
-		}
-	}
-	
-	public void remove(byte[] key) throws IOException {
-		writer.write(OPERATION_PREFIX);
-		writer.write(REMOVE_OPERATION);
-		
-		writer.writeInt(key.length);
-		writer.write(key);
-
-		int status = reader.read();
-		if ( status != 0 ) 
-			throw new RuntimeException(" READ : insertion Failed ");
-		
-	}
-	
 	public void openConnection() throws UnknownHostException, IOException {
 		socket = new Socket ( "localhost" , 1978);
 		writer = new DataOutputStream(socket.getOutputStream());
@@ -81,11 +58,6 @@ public class TyrantMap {
 		return ;
 	}
 
-	/**
-	 * @param key
-	 * @return
-	 * @throws IOException 
-	 */
 	public byte[] get(byte[] key) throws IOException {
 		
 		writer.write(OPERATION_PREFIX);
@@ -105,8 +77,45 @@ public class TyrantMap {
 		reader.read(results) ; // TODO read longer values
 		return results;
 	}
-
-
-
 	
+	public void clear() throws IOException {
+		writer.write(OPERATION_PREFIX);
+		writer.write(CLEAR_OPERATION);
+
+		int status = reader.read();
+		if ( status != 0 ) {
+			throw new RuntimeException(" CLEAR : insertion Failed ");
+		}
+	}
+	
+	public void remove(byte[] key) throws IOException {
+		writer.write(OPERATION_PREFIX);
+		writer.write(REMOVE_OPERATION);
+		
+		writer.writeInt(key.length);
+		writer.write(key);
+
+		int status = reader.read();
+		if ( status == 1 ) 
+			return ;
+		if ( status != 0 ) 
+			throw new RuntimeException(" READ : insertion Failed ");
+		
+	}
+
+	/**
+	 * @return
+	 * @throws IOException 
+	 */
+	public long size() throws IOException {
+		writer.write(OPERATION_PREFIX);
+		writer.write(SIZE_OPERATION);
+
+		int status = reader.read();
+		if ( status != 0 ) {
+			throw new RuntimeException(" CLEAR : insertion Failed ");
+		}
+		return reader.readLong();
+	}
+
 }

@@ -1,6 +1,6 @@
 X put
 X get
-* remove
+X remove
 X S vanish
 * iterator
 * size
@@ -9,3 +9,4 @@ X S vanish
 * http
 
 * auto-connect tyrant
+* key and value as constant in the list.

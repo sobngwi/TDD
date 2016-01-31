@@ -78,15 +78,41 @@ public class TyrantMapTest {
 	
 	@Test
 	public void removeEmptyKeyDoesNothing() throws IOException {
-
-		
 	    tyrant.remove(KEY);
 	    assertNull(tyrant.get(KEY));
 	}
 	
+	@Test(expected = IllegalArgumentException.class )
+	public void removeNullKeyThrowsAnIllegaArgumentException() throws IOException {
+	    tyrant.remove(null);
+	    fail();
+	}
+	
+	@Test
+	public void removesameElementKeyTwiceDoesNothing() throws IOException {
+		tyrant.put(KEY , VALUE);
+		assertNotNull(tyrant.get(KEY));
+		tyrant.remove(KEY);
+		assertNull(tyrant.get(KEY));
+		tyrant.remove(KEY);
+	    assertNull(tyrant.get(KEY));
+	}
+	
+	@Test
+	public void removeOneElementTyrant() throws IOException {
+		tyrant.put(KEY , VALUE);
+		tyrant.put(KEY1 , VALUE1);
+		assertEquals(2, tyrant.size());		
+		tyrant.remove(KEY);
+		
+		assertNull(tyrant.get(KEY));
+		assertNotNull(tyrant.get(KEY1));
+		assertEquals(1, tyrant.size());
+		
+	}
+	
 	@Test
 	public void emptyMapSizeIsZero() throws IOException {
-
 	    assertEquals(0, tyrant.size());
 	}
 	
@@ -146,6 +172,8 @@ public class TyrantMapTest {
 		assertEquals(2, count);
 
 	}
+	
+	
 	
 	
 

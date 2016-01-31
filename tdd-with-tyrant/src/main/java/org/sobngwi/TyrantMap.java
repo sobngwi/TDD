@@ -16,14 +16,7 @@ import java.util.Iterator;
  */
 public class TyrantMap implements Iterable <byte[]>{
 
-	private static final int GET_OPERATION = 0xC30;
-	private static final int OPERATION_PREFIX = 0xC8;
-	private static final int PUT_OPERATION = 0xC10;
-	private static final int VANISH_OPERATION = 0xC72;
-	private static final int REMOVE_OPERATION = 0xC20;
-	private static final int SIZE_OPERATION = 0xC80;
-	private static final int RESET_OPERATION = 0xC50;
-	private static final int NEXTKEY_OPERATION = 0xC51;
+	
 	
 	private Socket socket;
 	private DataOutputStream writer;
@@ -31,7 +24,7 @@ public class TyrantMap implements Iterable <byte[]>{
 
 	public void put( byte[] key, byte[] value) throws  IOException {
 
-		writeOperationCode(PUT_OPERATION);
+		writeOperationCode(OperationCode.PUT_OPERATION.getCode());
 
 		writeKeyValueDatas(key, value);
 		
@@ -46,7 +39,7 @@ public class TyrantMap implements Iterable <byte[]>{
 
 	public byte[] get(byte[] key) throws IOException {
 
-		writeOperationCode(GET_OPERATION);
+		writeOperationCode(OperationCode.GET_OPERATION.getCode());
 		
 		writekeyDatas(key);
 		
@@ -55,7 +48,7 @@ public class TyrantMap implements Iterable <byte[]>{
 	
 	public void clear() throws IOException {
 
-		writeOperationCode(VANISH_OPERATION);
+		writeOperationCode(OperationCode.VANISH_OPERATION.getCode());
 
 		int status = reader.read();
 		if ( status != 0 ) {
@@ -64,8 +57,9 @@ public class TyrantMap implements Iterable <byte[]>{
 	}
 	
 	public void remove(byte[] key) throws IOException {
-
-		writeOperationCode(REMOVE_OPERATION);
+		if ( key == null )
+			throw new IllegalArgumentException("key shold not be Null !") ;
+		writeOperationCode(OperationCode.REMOVE_OPERATION.getCode());
 		writekeyDatas(key);
 
 		int status = reader.read();
@@ -78,7 +72,7 @@ public class TyrantMap implements Iterable <byte[]>{
 
 	public long size() throws IOException {
 
-		writeOperationCode(SIZE_OPERATION);
+		writeOperationCode(OperationCode.SIZE_OPERATION.getCode());
 
 		int status = reader.read();
 		if ( status != 0 ) {
@@ -120,7 +114,7 @@ public class TyrantMap implements Iterable <byte[]>{
 
 	public byte[] getNextKey() throws IOException{
 
-		writeOperationCode(NEXTKEY_OPERATION);
+		writeOperationCode(OperationCode.NEXTKEY_OPERATION.getCode());
 
 		return readBytes();
 	
@@ -150,7 +144,7 @@ public class TyrantMap implements Iterable <byte[]>{
 	}
 	
 	private void writeOperationCode(int operation) throws IOException {
-		writer.write(OPERATION_PREFIX);
+		writer.write(OperationCode.OPERATION_PREFIX.getCode());
 		writer.write(operation);
 	}
 
@@ -169,7 +163,7 @@ public class TyrantMap implements Iterable <byte[]>{
 	
 	private void reset() throws IOException {
 
-		writeOperationCode(RESET_OPERATION);
+		writeOperationCode(OperationCode.RESET_OPERATION.getCode());
 
 		int status = reader.read();
 		if ( status != 0 ) {

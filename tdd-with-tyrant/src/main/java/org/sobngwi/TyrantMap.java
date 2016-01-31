@@ -19,9 +19,11 @@ public class TyrantMap implements Iterable <byte[]>{
 	private static final int GET_OPERATION = 0xC30;
 	private static final int OPERATION_PREFIX = 0xC8;
 	private static final int PUT_OPERATION = 0xC10;
-	private static final int  VANISH_OPERATION = 0xC72;
+	private static final int VANISH_OPERATION = 0xC72;
 	private static final int REMOVE_OPERATION = 0xC20;
 	private static final int SIZE_OPERATION = 0xC80;
+	private static final int RESET_OPERATION = 0xC50;
+	private static final int NEXTKEY_OPERATION = 0xC51;
 	
 	private Socket socket;
 	private DataOutputStream writer;
@@ -104,10 +106,7 @@ public class TyrantMap implements Iterable <byte[]>{
 		
 	}
 
-	/**
-	 * @return
-	 * @throws IOException 
-	 */
+
 	public long size() throws IOException {
 		writer.write(OPERATION_PREFIX);
 		writer.write(SIZE_OPERATION);
@@ -121,20 +120,67 @@ public class TyrantMap implements Iterable <byte[]>{
 
 	@Override
 	public Iterator<byte[]> iterator() {
-		return new Iterator<byte[]>(){
+		try {
+			reset();
+			byte[] firstKey = getNextKey();
 
+		return new Iterator<byte[]>(){
+			byte[]  nextKey = firstKey ;
 			@Override
 			public boolean hasNext() {
-				// TODO Auto-generated method stub
-				return false;
+				return nextKey != null ;
 			}
 
 			@Override
 			public byte[] next() {
-				// TODO Auto-generated method stub
-				return null;
+				byte[]  result ;
+				try {
+					result = get(nextKey) ;
+					nextKey = getNextKey();
+				} catch (IOException e) {
+					throw new RuntimeException(e) ;
+				}
+				return result;
 			}
 		} ;
+		} catch (IOException e) {
+			throw new RuntimeException(e) ;
+		}
+		
+	}
+
+	/**
+	 * 
+	 */
+	public void reset() throws IOException {
+
+		writer.write(OPERATION_PREFIX);
+		writer.write(RESET_OPERATION);
+
+		int status = reader.read();
+		if ( status != 0 ) {
+			throw new RuntimeException(" RESET  :  Failed ");
+		}
+	
+		
+	}
+
+	public byte[] getNextKey() throws IOException{
+
+		writer.write(OPERATION_PREFIX);
+		writer.write(NEXTKEY_OPERATION);
+
+		int status = reader.read();
+		if ( status == 1 ) 
+			return null ;
+		if ( status != 0 ) 
+			throw new RuntimeException(" GET NEXT KEY :  Failed ");
+		
+		int length = reader.readInt();
+		byte[] results= new  byte[length] ;
+		reader.read(results) ; // TODO read longer values
+		return results;
+	
 	}
 }
 

@@ -8,17 +8,18 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 
 /**
  * @author Alain Narcisse SOBNGWI
  *
  */
-public class TyrantMap {
+public class TyrantMap implements Iterable <byte[]>{
 
 	private static final int GET_OPERATION = 0xC30;
 	private static final int OPERATION_PREFIX = 0xC8;
 	private static final int PUT_OPERATION = 0xC10;
-	private static final int  CLEAR_OPERATION = 0xC72;
+	private static final int  VANISH_OPERATION = 0xC72;
 	private static final int REMOVE_OPERATION = 0xC20;
 	private static final int SIZE_OPERATION = 0xC80;
 	
@@ -80,7 +81,7 @@ public class TyrantMap {
 	
 	public void clear() throws IOException {
 		writer.write(OPERATION_PREFIX);
-		writer.write(CLEAR_OPERATION);
+		writer.write(VANISH_OPERATION);
 
 		int status = reader.read();
 		if ( status != 0 ) {
@@ -118,4 +119,23 @@ public class TyrantMap {
 		return reader.readLong();
 	}
 
+	@Override
+	public Iterator<byte[]> iterator() {
+		return new Iterator<byte[]>(){
+
+			@Override
+			public boolean hasNext() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public byte[] next() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		} ;
+	}
 }
+
+

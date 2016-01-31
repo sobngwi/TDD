@@ -3,9 +3,7 @@
  */
 package org.sobngwi;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -21,18 +19,12 @@ public class TyrantMapTest {
 	
 	TyrantMap tyrant ;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
 		tyrant = new TyrantMap() ;
 		tyrant.openConnection();
 	}
 
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@After
 	public void tearDown() throws Exception {
 		tyrant.clear();
@@ -73,8 +65,12 @@ public class TyrantMapTest {
 
 		byte[] key = new byte[]{'k','e','y'};
 		byte[] value = new byte[]{'v','a','l', 'u', 'e'};
+		byte[] key1 = new byte[]{'k','e','y', '1'};
+		byte[] value1 = new byte[]{'v','a','l', 'u', 'e', '1'};
 	    tyrant.put(key , value);
+	    tyrant.put(key1 , value1);
 	    assertArrayEquals(value, tyrant.get(key));
+	    assertArrayEquals(value1, tyrant.get(key1));
 	    tyrant.remove(key);
 	    assertNull(tyrant.get(key));
 	}
@@ -100,6 +96,15 @@ public class TyrantMapTest {
 	    tyrant.put(key , value);
 	    assertEquals(1, tyrant.size());
 	}
+	
+	@Test
+	public void iterateOverAnEmptyTyrant() throws IOException {
+		for (byte[] each : tyrant) {
+			fail() ;
+		}
+	    
+	}
+	
 	
 
 }

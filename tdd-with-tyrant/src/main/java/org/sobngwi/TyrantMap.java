@@ -29,19 +29,12 @@ public class TyrantMap implements Iterable <byte[]>{
 	private DataOutputStream writer;
 	private DataInputStream reader;
 
-
-	
-	
 	public void put( byte[] key, byte[] value) throws  IOException {
 
-		writer.write(OPERATION_PREFIX);
-		writer.write(PUT_OPERATION);
-		
-		writer.writeInt(key.length);
-		writer.writeInt(value.length);
+		writeOperationCode(PUT_OPERATION);
 
-		writer.write(key);
-		writer.write(value);
+		writeKeyValueDatas(key, value);
+		
 		int status = reader.read();
 		if ( status != 0 ) {
 			throw new RuntimeException(" PUT : insertion Failed ");
@@ -49,29 +42,20 @@ public class TyrantMap implements Iterable <byte[]>{
 		return ;
 	}
 
-	public byte[] get(byte[] key) throws IOException {
-		
-		writer.write(OPERATION_PREFIX);
-		writer.write(GET_OPERATION);
-		
-		writer.writeInt(key.length);
-		writer.write(key);
+	
 
-		int status = reader.read();
-		if ( status == 1 ) 
-			return null ;
-		if ( status != 0 ) 
-			throw new RuntimeException(" READ : insertion Failed ");
+	public byte[] get(byte[] key) throws IOException {
+
+		writeOperationCode(GET_OPERATION);
 		
-		int length = reader.readInt();
-		byte[] results= new  byte[length] ;
-		reader.read(results) ; // TODO read longer values
-		return results;
+		writekeyDatas(key);
+		
+		return readBytes();
 	}
 	
 	public void clear() throws IOException {
-		writer.write(OPERATION_PREFIX);
-		writer.write(VANISH_OPERATION);
+
+		writeOperationCode(VANISH_OPERATION);
 
 		int status = reader.read();
 		if ( status != 0 ) {
@@ -80,11 +64,9 @@ public class TyrantMap implements Iterable <byte[]>{
 	}
 	
 	public void remove(byte[] key) throws IOException {
-		writer.write(OPERATION_PREFIX);
-		writer.write(REMOVE_OPERATION);
-		
-		writer.writeInt(key.length);
-		writer.write(key);
+
+		writeOperationCode(REMOVE_OPERATION);
+		writekeyDatas(key);
 
 		int status = reader.read();
 		if ( status == 1 ) 
@@ -94,10 +76,9 @@ public class TyrantMap implements Iterable <byte[]>{
 		
 	}
 
-
 	public long size() throws IOException {
-		writer.write(OPERATION_PREFIX);
-		writer.write(SIZE_OPERATION);
+
+		writeOperationCode(SIZE_OPERATION);
 
 		int status = reader.read();
 		if ( status != 0 ) {
@@ -137,27 +118,44 @@ public class TyrantMap implements Iterable <byte[]>{
 		
 	}
 
-	/**
-	 * 
-	 */
 	public void reset() throws IOException {
 
-		writer.write(OPERATION_PREFIX);
-		writer.write(RESET_OPERATION);
+		writeOperationCode(RESET_OPERATION);
 
 		int status = reader.read();
 		if ( status != 0 ) {
 			throw new RuntimeException(" RESET  :  Failed ");
 		}
 	
-		
 	}
 
 	public byte[] getNextKey() throws IOException{
 
-		writer.write(OPERATION_PREFIX);
-		writer.write(NEXTKEY_OPERATION);
+		writeOperationCode(NEXTKEY_OPERATION);
 
+		return readBytes();
+	
+	}
+
+	private void writekeyDatas(byte[] key) throws IOException {
+		writer.writeInt(key.length);
+		writer.write(key);
+	}
+	
+	private void writeKeyValueDatas(byte[] key, byte[] value)
+			throws IOException {
+		writer.writeInt(key.length);
+		writer.writeInt(value.length);
+		writer.write(key);
+		writer.write(value);
+	}
+	
+	private void writeOperationCode(int operation) throws IOException {
+		writer.write(OPERATION_PREFIX);
+		writer.write(operation);
+	}
+
+	private byte[] readBytes() throws IOException {
 		int status = reader.read();
 		if ( status == 1 ) 
 			return null ;
@@ -168,7 +166,6 @@ public class TyrantMap implements Iterable <byte[]>{
 		byte[] results= new  byte[length] ;
 		reader.read(results) ; // TODO read longer values
 		return results;
-	
 	}
 	
 	public void openConnection() throws UnknownHostException, IOException {
@@ -177,10 +174,7 @@ public class TyrantMap implements Iterable <byte[]>{
 		reader = new DataInputStream(socket.getInputStream());
 	}
 
-
 	public void closeConnection() throws IOException {
 		socket.close();
 	}
 }
-
-

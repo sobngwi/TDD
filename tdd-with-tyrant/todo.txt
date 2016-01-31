@@ -1,9 +1,9 @@
 X put
 X get
-X remove
-X S vanish
-* iterator
-* size
+* remove
+X vanish
+X iterator
+X size
 
 * socket
 * http

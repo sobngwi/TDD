@@ -30,19 +30,7 @@ public class TyrantMap implements Iterable <byte[]>{
 	private DataInputStream reader;
 
 
-	public void openConnection() throws UnknownHostException, IOException {
-		socket = new Socket ( "localhost" , 1978);
-		writer = new DataOutputStream(socket.getOutputStream());
-		reader = new DataInputStream(socket.getInputStream());
-	}
-
-	/**
-	 * @throws IOException 
-	 * 
-	 */
-	public void closeConnection() throws IOException {
-		socket.close();
-	}
+	
 	
 	public void put( byte[] key, byte[] value) throws  IOException {
 
@@ -181,6 +169,17 @@ public class TyrantMap implements Iterable <byte[]>{
 		reader.read(results) ; // TODO read longer values
 		return results;
 	
+	}
+	
+	public void openConnection() throws UnknownHostException, IOException {
+		socket = new Socket ( "localhost" , 1978);
+		writer = new DataOutputStream(socket.getOutputStream());
+		reader = new DataInputStream(socket.getInputStream());
+	}
+
+
+	public void closeConnection() throws IOException {
+		socket.close();
 	}
 }
 
